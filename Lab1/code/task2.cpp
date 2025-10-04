@@ -44,18 +44,11 @@ public:
 
 class ThreeDicePool: public ADice{
 public:
-    ThreeDicePool(unsigned max, unsigned seed_1, unsigned seed_2, 
-        unsigned seed_3): d1(new Dice(max, seed_1)), 
-        d2(new Dice(max, seed_2)), d3(new Dice(max, seed_3)){}
     ThreeDicePool(ADice* d_1, ADice* d_2, ADice* d_3):d1(d_1),d2(d_2),d3(d_3){}
     unsigned roll() override{
         return d1->roll()+d2->roll()+d3->roll();
     }
-    ~ThreeDicePool() override{
-        delete d1;
-        delete d2;
-        delete d3;
-    }
+    ~ThreeDicePool(){}
 private:
     ADice* d1;
     ADice* d2;
@@ -79,11 +72,18 @@ double value_probability(unsigned value, ADice &d, unsigned number_of_rolls = 1)
 }
 
 int main(){
-    ThreeDicePool* cube = new ThreeDicePool(M, 10, 150, 209);
+    Dice* cube_1 = new Dice(M, 10), * cube_2 = new Dice(M, 150), * cube_3 = new Dice(M, 209);
+    ThreeDicePool* cube = new ThreeDicePool(cube_1, cube_2, cube_3);
     for(unsigned i = 1; i <= 18; i++){
         std::cout << value_probability(i, *cube, N) << std::endl;
         delete cube;
-        cube = new ThreeDicePool(M, 10, 150, 209);
+        delete cube_1;
+        delete cube_2;
+        delete cube_3;
+        cube_1 = new Dice(M, 10);
+        cube_2 = new Dice(M, 150);
+        cube_3 = new Dice(M, 209);
+        cube = new ThreeDicePool(cube_1, cube_2, cube_3);
     }
     delete cube;
 }
