@@ -7,17 +7,17 @@
 class ADice {
 public:
     virtual unsigned roll() = 0;
+    virtual ~ADice(){}
 };
 
 class Dice: public ADice{
 public:
-    Dice(unsigned max, unsigned seed): dstr(1, max), reng(seed), max(max){};
-    Dice(Dice& other):max(other.max), dstr(other.dstr), reng(other.reng){};
+    Dice(unsigned max, unsigned seed): dstr(1, max), reng(seed){}
+
     unsigned roll() override{
         return dstr(reng);
     }
 protected:
-    unsigned max;
     std::uniform_int_distribution<unsigned> dstr;
     std::default_random_engine reng;
 };
@@ -47,15 +47,20 @@ public:
     ThreeDicePool(unsigned max, unsigned seed_1, unsigned seed_2, 
         unsigned seed_3): d1(new Dice(max, seed_1)), 
         d2(new Dice(max, seed_2)), d3(new Dice(max, seed_3)){}
+    ThreeDicePool(ADice* d_1, ADice* d_2, ADice* d_3):d1(d_1),d2(d_2),d3(d_3){}
     unsigned roll() override{
         return d1->roll()+d2->roll()+d3->roll();
+    }
+    ~ThreeDicePool() override{
+        delete d1;
+        delete d2;
+        delete d3;
     }
 private:
     ADice* d1;
     ADice* d2;
     ADice* d3;
 };
-
 class DoubleDice: public PenaltyDice, public BonusDice{
 public:
     DoubleDice(Dice& d):Dice(d), PenaltyDice(d), BonusDice(d){}
