@@ -19,7 +19,7 @@ public:
             T** data;
             size_type size;
         public:
-            Row(Grid<T>& owner, size_type row):data(new T*[owner.x_size]), size(owner.x_size){
+            Row(Grid<T>const & owner, size_type row):data(new T*[owner.x_size]), size(owner.x_size){
                 if(row < owner.y_size){
                     for(size_type i = 0, end = size; i != end; ++i){
                         data[i] = owner.data[row * size + i];
@@ -107,11 +107,15 @@ public:
     Row operator[](size_type y_idx){
         return Row(*this, y_idx);
     }
+    const Row operator[](size_type y_idx)const{
+        return Row(*this, y_idx);
+    }
+    /*+const*/
 
 
 	size_type get_y_size() const{return y_size;}
 	size_type get_x_size() const{return x_size;}
-	void show(){
+	void show() const{
 		for(size_type i = 0, end = x_size*y_size; i != end; ++i) 
 			std::cout << *data[i] << std::endl;
 	}
@@ -156,8 +160,8 @@ int main(){
             assert(1.0f == g[y_idx][x_idx]);
             */
     Grid<int> g1(ar, 2, 5);
-    Grid<int> g2 = Grid<int>(2, 5, 1);
-    g2[0][0] = 90;
+    Grid<int> const g2 = Grid<int>(2, 5, 1);
+    std::cout << g2[0][0] << " ";
     g2.show();
     return 0;
 }
